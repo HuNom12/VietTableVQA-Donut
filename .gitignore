@@ -1,0 +1,16 @@
+__pycache__/
+*.py[codz]
+venv/
+env/
+.env
+.ipynb_checkpoints/
+
+data/
+dataset/
+
+checkpoints/
+models/
+*.safetensors
+*.bin
+
+runs/
