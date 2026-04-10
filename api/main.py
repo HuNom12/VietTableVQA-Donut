@@ -5,6 +5,8 @@ from fastapi import FastAPI, File, UploadFile, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from PIL import Image
 from transformers import DonutProcessor, VisionEncoderDecoderModel
+import sys
+from pathlib import Path
 
 app = FastAPI(title="VietTableVQA PRO API", version="1.2.0")
 
@@ -37,7 +39,7 @@ def final_answer_format(text):
 # ==========================================================
 # 2. KHỞI TẠO HỆ THỐNG (LOAD MODEL ĐÃ TRAIN)
 # ==========================================================
-MODEL_PATH = r"E:\HuNamDocument\My First Project\TableVQA_project\checkpoints\best_model"
+MODEL_PATH = "./checkpoints/best_model_bias"
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 print(f"🚀 Đang đưa 'Best Model' lên {device.upper()}...")
@@ -55,6 +57,13 @@ bad_words_ids = [
     processor.tokenizer.encode("answer", add_special_tokens=False)
 ]
 
+root_path = str(Path(__file__).resolve().parent.parent)
+if root_path not in sys.path:
+    sys.path.append(root_path)
+
+from src.utils.image_processor import ImageFilter
+img_filter = ImageFilter()
+
 @app.post("/predict")
 async def predict_invoice(
     question: str = Form(..., description="Câu hỏi truy vấn"), 
@@ -67,6 +76,8 @@ async def predict_invoice(
     image_bytes = await file.read()
     image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
     
+    image = img_filter.apply_all_filters(image)
+
     pixel_values = processor(
         images=image, 
         return_tensors="pt", 
@@ -90,7 +101,7 @@ async def predict_invoice(
             use_cache=True,
             bad_words_ids=bad_words_ids, 
             num_beams=4,              # Dùng Beam Search xịn như bản inference
-            repetition_penalty=1.5,   # Phạt lặp từ
+            repetition_penalty=1.2,   # Phạt lặp từ
             early_stopping=True,
             return_dict_in_generate=True,
         )
