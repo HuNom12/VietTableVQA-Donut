@@ -12,14 +12,14 @@ app = FastAPI(title="VietTableVQA PRO API", version="1.2.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Cho phép tất cả các nguồn truy cập (để test cho nhanh)
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 # ==========================================================
-# 1. CÁC HÀM HẬU KỲ "PRO MAX" (BÊ NGUYÊN TỪ INFERENCE CỦA NAM)
+# 1. CÁC HÀM HẬU KỲ
 # ==========================================================
 def clean_vietnamese_text(text):
     text = re.sub(r'(?<=[a-zA-Zà-ỹÀ-Ỹ])\s+(?=[a-zà-ỹ])', '', text)
@@ -39,7 +39,7 @@ def final_answer_format(text):
 # ==========================================================
 # 2. KHỞI TẠO HỆ THỐNG (LOAD MODEL ĐÃ TRAIN)
 # ==========================================================
-MODEL_PATH = "./checkpoints/best_model_bias"
+MODEL_PATH = "./checkpoints/best_model"
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 print(f"🚀 Đang đưa 'Best Model' lên {device.upper()}...")

@@ -1,0 +1,13 @@
+# Bỏ qua môi trường ảo (Nặng nhất)
+venv/
+.venv/
+
+# Bỏ qua dữ liệu và model (Vì mình đã dùng Volume để kết nối rồi)
+data/
+checkpoints/
+
+# Bỏ qua các file rác
+__pycache__/
+*.pyc
+.git/
+.vscode/

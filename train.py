@@ -19,7 +19,7 @@ training_args = Seq2SeqTrainingArguments(
     fp16=True,                         
     
     learning_rate=3e-5,                 
-    num_train_epochs=10,                    
+    num_train_epochs=15,                    
     logging_steps=10,         
     eval_strategy="epoch",          
     save_strategy="epoch",

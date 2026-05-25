@@ -3,10 +3,8 @@ import requests
 from PIL import Image
 import io
 
-# 1. Cấu hình trang rộng hơn để tận dụng không gian
-st.set_page_config(page_title="VietTableVQA Pro", layout="wide")
+st.set_page_config(page_title="VietTableVQA", layout="wide")
 
-# Custom CSS để giao diện nhìn "mượt" hơn
 st.markdown("""
     <style>
     .main { background-color: #f5f7f9; }
@@ -15,18 +13,17 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-st.title("🚀 VietTableVQA: Trích xuất Dữ liệu Bảng biểu")
+st.title("VietTableVQA: Trích xuất Dữ liệu Bảng biểu")
 st.markdown("Hệ thống hỗ trợ đọc hiểu hóa đơn, báo cáo tài chính và bảng biểu tiếng Việt.")
 
 # --- SIDEBAR ---
 with st.sidebar:
     st.header("⚙️ Cấu hình & Thông tin")
-    st.info("Mô hình: **Donut-v1-bias**\n\nDataset: 400+ ảnh bảng biểu thực tế.")
+    st.info("Mô hình: **Donut**\n\nDataset: 400+ ảnh bảng biểu thực tế.")
     
     st.divider()
 
 # --- MAIN CONTENT ---
-# Chia làm 2 cột: Trái (Ảnh) - Phải (Câu hỏi & Kết quả)
 col1, col2 = st.columns([1, 1], gap="large")
 
 with col1:
@@ -42,7 +39,6 @@ with col1:
 with col2:
     st.subheader("🔍 Truy vấn dữ liệu")
     
-    # Sử dụng session_state để hỗ trợ các câu hỏi gợi ý từ sidebar
     if "current_question" not in st.session_state:
         st.session_state.current_question = ""
 
@@ -59,7 +55,7 @@ with col2:
                     files = {"file": (uploaded_file.name, uploaded_file.getvalue(), uploaded_file.type)}
                     data = {"question": question}
                     
-                    response = requests.post("http://127.0.0.1:8000/predict", files=files, data=data)
+                    response = requests.post("http://backend:8000/predict", files=files, data=data)
                     result = response.json()
 
                     if result.get("status") == "success":
@@ -71,7 +67,6 @@ with col2:
                         """
                         st.markdown(result_html, unsafe_allow_html=True)
                         
-                        # Hiển thị Score nếu Backend có trả về (để tăng độ tin cậy)
                         if "confidence" in result:
                             st.progress(result["confidence"])
                             st.caption(f"Độ tin cậy: {result['confidence']*100:.2f}%")

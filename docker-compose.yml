@@ -1,0 +1,29 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: deployment/Dockerfile.api
+    ports:
+      - "8000:8000"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1 # Dùng 1 GPU
+              capabilities: [gpu]
+    volumes:
+      - .:/app
+      - ./checkpoints:/app/checkpoints  # Cửa sổ kết nối Model
+      - ./data:/app/data                # Cửa sổ kết nối Data
+
+  frontend:
+    build:
+      context: .
+      dockerfile: deployment/Dockerfile.app
+    ports:
+      - "8501:8501"
+    depends_on:
+      - backend
+    volumes:
+      - .:/app
