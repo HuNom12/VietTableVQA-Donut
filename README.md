@@ -46,11 +46,11 @@ Phục vụ mục đích xem mã nguồn, tinh chỉnh mô hình và đóng gói
 ```bash
 git clone [https://github.com/HuNom12/VietTableVQA-Donut.git](https://github.com/HuNom12/VietTableVQA-Donut.git)
 cd VietTableVQA-Donut
-
+```
 **Bước 2: Nạp trọng số mô hình (Model Checkpoints)**
 Tạo đúng cấu trúc thư mục local và đặt các file trọng số nặng (được chặn bởi file .gitignore) vào đúng đường dẫn sau:
 
-Plaintext
+```text
 TABLEVQA_PROJECT/
 ├── data/                  
 └── checkpoints/
@@ -58,63 +58,68 @@ TABLEVQA_PROJECT/
         ├── config.json
         ├── pytorch_model.bin (hoặc model.safetensors)
         └── tokenizer.json
-Bước 3: Build và khởi chạy môi trường Dev
+```
+**Vui lòng liên hệ tác giả qua Email/LinkedIn để được cấp quyền truy cập kho lưu trữ mô hình và dữ liệu huấn luyện.**
 
-Bash
+**Bước 3: Build và khởi chạy môi trường Dev**
+
+```Bash
 docker-compose up --build
+```
+
 ## 5. Hướng Dẫn Sử Dụng
 Sau khi hệ thống được khởi chạy thành công, toàn bộ giao tiếp sẽ diễn ra trong mạng nội bộ của thiết bị.
 
-Truy cập Giao Diện Web: Mở trình duyệt web và truy cập vào địa chỉ cục bộ:
+- **Truy cập Giao Diện Web:** Mở trình duyệt web và truy cập vào địa chỉ cục bộ:
 
 👉 http://localhost:8501
 
 Thao tác: Kéo thả hình ảnh bảng biểu vào khung tải lên, nhập câu hỏi tự nhiên bằng Tiếng Việt và nhấn nút để nhận kết quả trích xuất.
 
-Truy cập Backend API (Tùy chọn): Dành cho hệ thống phần mềm thứ 3 muốn gọi API cục bộ:
+- **Truy cập Backend API (Tùy chọn):** Dành cho hệ thống phần mềm thứ 3 muốn gọi API cục bộ:
 
 👉 http://localhost:8000/docs
 
-Tắt hệ thống: Để dừng an toàn và giải phóng tài nguyên GPU, click đúp vào file SHUT.bat (đối với người dùng cuối) hoặc gõ docker-compose down trong Terminal.
+- **Tắt hệ thống:** Để dừng an toàn và giải phóng tài nguyên GPU, click đúp vào file SHUT.bat (đối với người dùng cuối) hoặc gõ docker-compose down trong Terminal.
 
-6. Định Dạng Dữ Liệu & API Endpoints (Data Format & API Specifications)
-Định Dạng Dữ Liệu Huấn Luyện (Input/Output JSON Ground Truth)
-Dữ liệu đầu vào phục vụ huấn luyện mô hình Donut được tổ chức theo cấu trúc chuỗi JSON nghiêm ngặt (Strict Parsing), bám sát explicit text trên ảnh:
+## 6. Định Dạng Dữ Liệu & API Endpoints (Data Format & API Specifications)
+Dữ liệu đầu vào phục vụ huấn luyện mô hình Donut được tổ chức theo cấu trúc chuỗi JSON nghiêm ngặt (Strict Parsing), bám sát explicit text sau:
 
-JSON
+```JSON
 {
   "file_name": "images/statistics/001_statistics.png", 
   "ground_truth": "{\"gt_parse\": {\"question\": \"So với quý III/2024 thuộc Dự báo tăng trưởng GDP quý III/2025 của Trung Quốc là bao nhiêu?\", \"answer\": \"5,4\"}}"
 }
-Chi Tiết API Endpoint Quan Trọng (Backend OpenAPI)
+```
 Hệ thống cung cấp cổng API hiệu năng cao phục vụ xử lý thời gian thực:
 
-Endpoint: POST /predict
+- **Endpoint:** POST /predict
 
-Content-Type: multipart/form-data
+- **Content-Type:** multipart/form-data
 
-Tham số đầu vào:
+- **Tham số đầu vào:**
 
-file: File ảnh cần trích xuất dữ liệu (UploadFile)
+    + file: File ảnh cần trích xuất dữ liệu (UploadFile)
 
-question: Chuỗi văn bản câu hỏi truy vấn (Form)
+    + question: Chuỗi văn bản câu hỏi truy vấn (Form)
 
 Định dạng cấu trúc phản hồi mẫu (Response JSON):
 
-JSON
+```JSON
 {
   "status": "success",
   "question": "Nước sản xuất của Máy phân tích huyết học 18 thông số kỹ thuật là nước nào?",
   "answer": "Mỹ",
   "debug_raw": "<s_question>Nước sản xuất của Máy phân tích huyết học 18 thông số kỹ thuật là nước nào?</s_question><s_answer>Mỹ</s_answer>"
 }
-7. Tác Giả & Giấy Phép (Contributors & License)
-Thông Tin Liên Hệ
-Họ và tên: Âu Đình Nguyên (Nam)
+```
+## 7. Tác Giả & Giấy Phép (Contributors & License)
+### Thông Tin Liên Hệ
+- **Họ và tên:** Trần Hữu Nam
 
-Học vấn: Sinh viên Khoa Khoa học và Kỹ thuật Máy tính - Trường Đại học Bách khoa ĐHQG-HCM (HCMUT)
+- **Học vấn:** Sinh viên Ngành Khoa học và Kỹ thuật Máy tính - Trường Đại học Bách khoa ĐHQG-HCM
 
-GitHub: HuNom12
+- **GitHub:** HuNom12
 
 Giấy Phép (License)
 Mã nguồn của dự án này được phát hành tuân thủ theo các điều khoản của MIT License. Chi tiết vui lòng tham khảo file LICENSE đính kèm trong mã nguồn.
