@@ -18,9 +18,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ==========================================================
-# 1. CÁC HÀM HẬU KỲ
-# ==========================================================
+# 1. HẬU XỬ LÝ
+
 def clean_vietnamese_text(text):
     text = re.sub(r'(?<=[a-zA-Zà-ỹÀ-Ỹ])\s+(?=[a-zà-ỹ])', '', text)
     text = re.sub(r'\s+(?=[à-ỹ])', '', text)
@@ -36,20 +35,18 @@ def final_answer_format(text):
         text = text.replace(search, replace)
     return text
 
-# ==========================================================
-# 2. KHỞI TẠO HỆ THỐNG (LOAD MODEL ĐÃ TRAIN)
-# ==========================================================
+
+# 2. KHỞI TẠO HỆ THỐNG
+
 MODEL_PATH = "./checkpoints/best_model"
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-print(f"🚀 Đang đưa 'Best Model' lên {device.upper()}...")
-# Load processor từ thư mục gốc để lấy từ điển mới, model từ best_model
+print(f"Đang nạp Best Model lên {device.upper()}...")
 processor = DonutProcessor.from_pretrained(MODEL_PATH)
 model = VisionEncoderDecoderModel.from_pretrained(MODEL_PATH).to(device)
 model.eval()
-print("✅ Hệ thống đã sẵn sàng chiến đấu!")
+print("Hệ thống sẵn sàng")
 
-# Chuẩn bị danh sách từ cấm để tránh lặp JSON rác
 bad_words_ids = [
     processor.tokenizer.encode("{", add_special_tokens=False),
     processor.tokenizer.encode('"', add_special_tokens=False),
@@ -72,7 +69,6 @@ async def predict_invoice(
     if not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Chỉ chấp nhận file ảnh.")
     
-    # Đọc và xử lý ảnh theo size chuẩn của Nam
     image_bytes = await file.read()
     image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
     
@@ -84,13 +80,12 @@ async def predict_invoice(
         size={"height": 960, "width": 720}
     ).pixel_values.to(device)
 
-    # 3. FIX PROMPT: Khớp 100% với logic huấn luyện
     prompt = f"<s_question>{question}</s_question><s_answer>"
     decoder_input_ids = processor.tokenizer(
         prompt, add_special_tokens=False, return_tensors="pt"
     ).input_ids.to(device)
 
-    # 4. SINH KẾT QUẢ VỚI CHẾ ĐỘ "THIẾT QUÂN LUẬT"
+    # 4. SINH KẾT QUẢ 
     with torch.no_grad():
         outputs = model.generate(
             pixel_values,
@@ -100,13 +95,13 @@ async def predict_invoice(
             eos_token_id=processor.tokenizer.eos_token_id,
             use_cache=True,
             bad_words_ids=bad_words_ids, 
-            num_beams=4,              # Dùng Beam Search xịn như bản inference
-            repetition_penalty=1.2,   # Phạt lặp từ
+            num_beams=4,             
+            repetition_penalty=1.2,  
             early_stopping=True,
             return_dict_in_generate=True,
         )
 
-    # 5. GIẢI MÃ VÀ LÀM ĐẸP (CLEANING)
+    # 5. GIẢI MÃ 
     sequence = processor.batch_decode(outputs.sequences, skip_special_tokens=False)[0]
     clean_seq = sequence.replace(processor.tokenizer.pad_token, "").replace(processor.tokenizer.eos_token, "").strip()
     
@@ -118,7 +113,7 @@ async def predict_invoice(
 
     final_ans = clean_vietnamese_text(raw_answer)
     final_ans = final_answer_format(final_ans)
-    final_ans = re.sub(r'<.*?>', '', final_ans).strip() # Xóa nốt thẻ rác nếu có
+    final_ans = re.sub(r'<.*?>', '', final_ans).strip() 
 
     return {
         "status": "success",

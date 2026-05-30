@@ -71,16 +71,16 @@ with col2:
                             st.progress(result["confidence"])
                             st.caption(f"Độ tin cậy: {result['confidence']*100:.2f}%")
                             
-                        with st.expander("📄 Chi tiết kỹ thuật (JSON Raw)"):
+                        with st.expander("JSON Raw"):
                             st.json(result)
                     else:
-                        st.error("Model không tìm thấy câu trả lời phù hợp.")
+                        st.error("không tìm thấy câu trả lời phù hợp.")
                 except Exception as e:
                     st.error(f"Lỗi kết nối Backend: {e}")
         elif not uploaded_file:
-            st.warning("Bạn chưa tải ảnh lên kìa!")
+            st.warning("CHƯA TẢI ẢNH")
         else:
-            st.warning("Đừng quên nhập câu hỏi nhé!")
+            st.warning("CHƯA NHẬP CÂU HỎI")
 
 st.divider()
 st.caption("Sinh viên thực hiện: Trần Hữu Nam")

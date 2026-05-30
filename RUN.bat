@@ -50,6 +50,7 @@ echo ===================================================
 docker-compose up -d
 
 echo.
+start "Inference Logs" cmd /k "docker-compose logs -f"
 echo [*] Dang load Model...
 timeout /t 20 /nobreak > nul
 
